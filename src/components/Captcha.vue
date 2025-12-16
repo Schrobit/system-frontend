@@ -1,23 +1,36 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { API_BASE_URL } from '../config'
-import { request } from '../utils/request'
 
-// 接收父组件的 v-model
-const modelValue = defineModel()
+// 明确接收父组件的值
+const props = defineProps({
+  modelValue: {
+    type: String,
+    default: ''
+  }
+})
+
+// 明确告诉父组件怎么更新
+const emit = defineEmits(['update:modelValue'])
 
 const captchaSvg = ref('')
 
-// 获取验证码  验证码是特殊接口（返回 SVG），不强行塞进 request 是对的。
+// 获取验证码
 async function loadCaptcha() {
-  // 注意：验证码是 text，不是 json
-  const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/captcha`, {
+  // ⭐ 刷新验证码时，清空父组件的 captcha
+  emit('update:modelValue', '')
+
+  const res = await fetch(`${API_BASE_URL}/api/auth/captcha`, {
     credentials: 'include'
   })
   captchaSvg.value = await res.text()
 }
 
-// 暴露给父组件，用于登录失败时刷新
+// 输入框变化时，同步给父组件
+function onInput(e) {
+  emit('update:modelValue', e.target.value)
+}
+
 defineExpose({
   loadCaptcha
 })
@@ -30,7 +43,8 @@ onMounted(() => {
 <template>
   <div style="display: flex; gap: 8px; align-items: center;">
     <input
-      v-model="modelValue"
+      :value="modelValue"
+      @input="onInput"
       placeholder="验证码"
       style="width: 100px;"
     />

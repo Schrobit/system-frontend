@@ -1,10 +1,10 @@
 <script setup>
 import { ref } from 'vue'
 import Captcha from './Captcha.vue'
-import { loginApi } from '../api/authApi'   
+import { registerApi } from '../api/authApi'
 
-// 通知父组件“登录成功”
-const emit = defineEmits(['success', 'toRegister'])
+// 通知父组件：注册完成，切回登录
+const emit = defineEmits(['success', 'toLogin'])
 
 const username = ref('')
 const password = ref('')
@@ -15,26 +15,21 @@ const loading = ref(false)
 
 const captchaRef = ref(null)
 
-async function login() {
+async function register() {
   message.value = ''
   loading.value = true
-  // 校验输入
-  console.log('提交时 captcha =', captcha.value)
-  if (!username.value || !password.value || !captcha.value) {
-    message.value = '请填写完整信息'
-    return
-  }
 
   try {
-    const data = await loginApi({
-        username: username.value,
-        password: password.value,
-        captcha: captcha.value
+    const data = await registerApi({
+      username: username.value,
+      password: password.value,
+      captcha: captcha.value
     })
 
     if (data.code === 0) {
-      localStorage.setItem('token', data.data.token)
+      message.value = '注册成功，请登录'
       emit('success')
+      emit('toLogin')
     } else {
       message.value = data.message
       captchaRef.value?.loadCaptcha()
@@ -49,7 +44,7 @@ async function login() {
 
 <template>
   <div style="padding: 24px; border: 1px solid #ddd; width: 280px;">
-    <h2>登录</h2>
+    <h2>注册</h2>
 
     <input
       v-model="username"
@@ -67,20 +62,20 @@ async function login() {
     <Captcha v-model="captcha" ref="captchaRef" />
 
     <button
-      @click="login"
+      @click="register"
       :disabled="loading"
       style="margin-top: 12px; width: 100%;"
     >
-      {{ loading ? '登录中...' : '登录' }}
+      {{ loading ? '注册中...' : '注册' }}
     </button>
 
     <p v-if="message" style="color: red; margin-top: 8px;">
       {{ message }}
     </p>
-  </div>
 
-  <p style="margin-top: 8px;">
-    还没有账号？
-    <a href="#" @click.prevent="emit('toRegister')">去注册</a>
-  </p>
+    <p style="margin-top: 8px;">
+      已有账号？
+      <a href="#" @click.prevent="emit('toLogin')">去登录</a>
+    </p>
+  </div>
 </template>
