@@ -39,7 +39,7 @@ const count = ref(0)
 
 <style scoped>
 .read-the-docs {
-  color: #8b2d2d;
-   /* 点击跳转 */
+  color: #2b112d;
+  /* 这是一个注释 */
 }
 </style>
