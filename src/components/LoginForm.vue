@@ -6,6 +6,7 @@ import { loginApi } from '../api/authApi'
 // 通知父组件“登录成功”
 const emit = defineEmits(['success', 'toRegister'])
 
+// test
 const username = ref('')
 const password = ref('')
 const captcha = ref('')
