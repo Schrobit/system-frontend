@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { API_BASE_URL } from '../config'
+import {ref, onMounted} from 'vue'
+import {API_BASE_URL} from '../config'
 
 // 明确接收父组件的值
 const props = defineProps({
@@ -16,7 +16,8 @@ const emit = defineEmits(['update:modelValue'])
 const captchaSvg = ref('')
 
 // 获取验证码
-async function loadCaptcha() {
+async function loadCaptcha()
+{
   // ⭐ 刷新验证码时，清空父组件的 captcha
   emit('update:modelValue', '')
 
@@ -26,32 +27,39 @@ async function loadCaptcha() {
   captchaSvg.value = await res.text()
 }
 
+const captchaTest = ref('')
+
 // 输入框变化时，同步给父组件
-function onInput(e) {
-  emit('update:modelValue', e.target.value)
+function onInput(e)
+{
+  console.log(captchaTest.value)
+  emit('update:modelValue', captchaTest.value)
 }
 
 defineExpose({
   loadCaptcha
 })
 
-onMounted(() => {
+onMounted(() =>
+{
   loadCaptcha()
 })
 </script>
 
 <template>
   <div style="display: flex; gap: 8px; align-items: center;">
-    <input
-      :value="modelValue"
-      @input="onInput"
-      placeholder="验证码"
-      style="width: 100px;"
+    <el-input
+        id="captcha"
+        v-model="captchaTest"
+        :value="modelValue"
+        @input="onInput"
+        placeholder="验证码"
+        style="width: 100px;"
     />
     <span
-      v-html="captchaSvg"
-      style="cursor: pointer;"
-      @click="loadCaptcha"
+        v-html="captchaSvg"
+        style="cursor: pointer;"
+        @click="loadCaptcha"
     ></span>
   </div>
 </template>
